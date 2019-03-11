@@ -1,4 +1,5 @@
 <?php
+	$db = new SQLite3('db/testing.sqlite', SQLITE3_OPEN_CREATE | SQLITE3_OPEN_READWRITE);
 	class UserModel
 	{
 		public $id = null;
@@ -35,24 +36,43 @@
 
 		public static function create($user) {
 			self::validate($user);
+			global $db;
+			$query = "
+			INSERT INTO users
+				(first, email, last, phone, status, user_type, avatar, address, lat, lng)
+			VALUES
+				(?,?,?,?,?,?,?,?,?,?)
+			";
+			if ($statement = $db->prepare($query)) {
+				$statement->bindParam('ssssssssdd',
+				$user['first'],
+				$user['email'],
+				$user['last'],
+				$user['phone'],
+				$user['status'],
+				$user['user_type'],
+				$user['avatar'],
+				$user['address'],
+				$user['lat'],
+				$user['lng']);
+			}
+
+			$statement->execute();
+			$insert_id = $statement->insert_id;
+
+			if ($insert_id) {
+				return $insert_id;
+			}
 
 			throw new Exception("Error Inserting User Into DB");
 		}
 
 		public static function read($id) {
-			$user = array(
-				'id' => 1,
-				'email' => 'what@what.com',
-				'first' => 'jason',
-				'last' => 'tham',
-				'phone' => '7738418100',
-				'user_type' => 'moonriser',
-				'status' => 'active',
-				'avatar' => 'http://imugur.com/123.jpg',
-				'address' => '129 West 81st Street',
-				'lat' => 40.783821, 
-				'lng' => -73.975423,
-			);
+			global $db;
+			$results = $db->query("SELECT * from users WHERE id = $id");
+			while ($row = $results->fetchArray()) {
+				$user = $row;
+			}
 
 			if ($user) {
 				return new UserModel($user);
@@ -92,14 +112,27 @@
 		}
 
 		public static function validate($user) {
-
+			if (!filter_var($user['email'], FILTER_VALIDATE_EMAIL)) {
+				throw new Exception('Invalid Email provided.');
+			} elseif (!filter_var($user['lat'], FILTER_VALIDATE_FLOAT) || !filter_var($user['lng'], FILTER_VALIDATE_FLOAT)) {
+				throw new Exception('Invalid latitude / longitude provided.');
+			}
+			return true;
 		}
 
 		public static function list() {
+			global $db;
 
-		}
+			if ($results = $db->query("SELECT * from users")){
+				$user_list = array();
+				while ($row = $results->fetchArray()) {
+					$user = new UserModel($row);
+					$user_list[] = $user->toJSON();
+				}
 
-		public static function find($find_params) {
+				return $user_list;
+			}
 
+			throw new Exception("Error Running Query");
 		}
 	}
