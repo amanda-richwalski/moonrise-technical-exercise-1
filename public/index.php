@@ -5,26 +5,33 @@ require_once __DIR__ . '/../src/Models/UserModel.php';
 
 // Default index page
 router('GET', '^/$', function() {
-    echo '<a href="users">List users</a><br>';
+    header('Content-Type: application/json');
+    $status = array(
+        'status'  =>  'up'
+    );
+    echo json_encode($status);
 });
 
 // GET request to /users
 router('GET', '^/users$', function() {
-    echo '<a href="users/1000">Show user: 1000</a>';
+    $user_list = UserModel::list();
+    header('Content-Type: application/json');
+    echo json_encode($user_list);
 });
 
 // With named parameters
 router('GET', '^/users/(?<id>\d+)$', function($params) {
-    $user = UserModel::read($params['id']);
+    $user = UserModel::read(intval($params['id']));
     header('Content-Type: application/json');
-    echo json_encode($user->ToJSON());
+    echo json_encode($user->toJSON());
 });
 
 // POST request to /users
 router('POST', '^/users$', function() {
     header('Content-Type: application/json');
     $json = json_decode(file_get_contents('php://input'), true);
-    echo json_encode(['result' => 1]);
+    $user_id = UserModel::create($json);
+    echo json_encode(UserModel::read($user_id));
 });
 
 header("HTTP/1.0 404 Not Found");
