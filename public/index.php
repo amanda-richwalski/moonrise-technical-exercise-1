@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../src/functions.php';
+require_once __DIR__ . '/../src/Models/UserModel.php';
 
 // Default index page
 router('GET', '^/$', function() {
@@ -14,8 +15,9 @@ router('GET', '^/users$', function() {
 
 // With named parameters
 router('GET', '^/users/(?<id>\d+)$', function($params) {
-    echo "You selected User-ID: ";
-    var_dump($params);
+    $user = UserModel::read($params['id']);
+    header('Content-Type: application/json');
+    echo json_encode($user->ToJSON());
 });
 
 // POST request to /users
