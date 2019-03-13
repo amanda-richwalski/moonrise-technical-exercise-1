@@ -1,5 +1,5 @@
 <?php
-	$db = new SQLite3('db/testing.sqlite', SQLITE3_OPEN_CREATE | SQLITE3_OPEN_READWRITE);
+	$db = new SQLite3('api/db/testing.sqlite', SQLITE3_OPEN_CREATE | SQLITE3_OPEN_READWRITE);
 	class UserModel
 	{
 		public $id = null;
@@ -41,29 +41,23 @@
 			INSERT INTO users
 				(first, email, last, phone, status, user_type, avatar, address, lat, lng)
 			VALUES
-				(?,?,?,?,?,?,?,?,?,?)
+				(:first,:email,:last,:phone,:status,:user_type,:avatar,:address,:lat,:lng)
 			";
 			if ($statement = $db->prepare($query)) {
-				$statement->bindParam('ssssssssdd',
-				$user['first'],
-				$user['email'],
-				$user['last'],
-				$user['phone'],
-				$user['status'],
-				$user['user_type'],
-				$user['avatar'],
-				$user['address'],
-				$user['lat'],
-				$user['lng']);
+				$statement->bindvalue(':first',$user['first']);
+				$statement->bindvalue(':email',$user['email']);
+				$statement->bindvalue(':last',$user['last']);
+				$statement->bindvalue(':phone',$user['phone']);
+				$statement->bindvalue(':status',$user['status']);
+				$statement->bindvalue(':user_type',$user['user_type']);
+				$statement->bindvalue(':avatar',$user['avatar']);
+				$statement->bindvalue(':lat',$user['lat']);
+				$statement->bindvalue(':lng',$user['lng']);
+				$statement->bindvalue(':address',$user['address']);
+				$statement->execute();
+				$result = $db->lastInsertRowID();
+				return $result;
 			}
-
-			$statement->execute();
-			$insert_id = $statement->insert_id;
-
-			if ($insert_id) {
-				return $insert_id;
-			}
-
 			throw new Exception("Error Inserting User Into DB");
 		}
 
