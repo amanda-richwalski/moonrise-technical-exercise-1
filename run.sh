@@ -1,2 +1,2 @@
 #!/bin/bash
-php -S localhost:8080 ./public/index.php
+php -S localhost:8080 ./api/public/index.php
