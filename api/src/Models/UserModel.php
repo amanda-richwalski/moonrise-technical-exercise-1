@@ -99,12 +99,6 @@
 			return $json;
 		}
 
-		public static function update($update) {
-			if (!isset($update['id']) || ! is_int($update['id']) || $update['id'] < 1) {
-				throw new Exception('Attempted to update user without ID.');
-			}
-		}
-
 		public static function validate($user) {
 			if (!filter_var($user['email'], FILTER_VALIDATE_EMAIL)) {
 				throw new Exception('Invalid Email provided.');
