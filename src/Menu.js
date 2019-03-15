@@ -39,8 +39,8 @@ class SimpleMenu extends React.Component {
           onClose={this.handleClose}
         >
           <Link to="/" style={{ textDecoration: 'none', display: 'block' }}><MenuItem onClick={this.handleClose}>Home</MenuItem></Link>
-          <Link to="/user" style={{ textDecoration: 'none', display: 'block' }}><MenuItem onClick={this.handleClose}>User Form</MenuItem></Link>
-          <Link to="/list" style={{ textDecoration: 'none', display: 'block' }}><MenuItem onClick={this.handleClose}>User List</MenuItem></Link>
+          <Link to="/user" style={{ textDecoration: 'none', display: 'block' }}><MenuItem onClick={this.handleClose}>Create a User</MenuItem></Link>
+          <Link to="/list" style={{ textDecoration: 'none', display: 'block' }}><MenuItem onClick={this.handleClose}>List Users</MenuItem></Link>
         </Menu>
       </div>
     );
